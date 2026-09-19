@@ -4,8 +4,13 @@
 module tb;
 
   // TODO: declare the inputs and outputs
-
+  reg  [2:0] t_sel;  
+  wire [7:0] t_dout;
   // TODO: instantiate DUT here
+  lut #(.WIDTH(8), .DEPTH(8)) DUT (
+    .sel  (t_sel),
+    .dout (t_dout)
+  );
 
   // Waveform dump configuration (DO NOT CHANGE)
   string vcd_file;
@@ -15,13 +20,22 @@ module tb;
       $dumpvars(0, DUT);
     end
   end
-
+  
+  integer j;
   initial begin
     // TODO: apply different input combinations
+    for (j = 0; j < 8; j = j + 1) begin
+      t_sel = j;
+      #5;
+      if (t_dout !== (j * j))
+        $display("FAIL at time %0t: sel=%0d dout=%0d expected=%0d",
+                  $time, j, t_dout, j * j);
+    end
+    $finish;
 
   end
 
   initial
-    $monitor($time, " I0=%b I1=%b S=%b | Y=%b", t_i0, t_i1, t_s, t_y); // change as required
+    $monitor($time, " sel=%0d dout=%0d", t_sel, t_dout); // change as required
 
 endmodule
